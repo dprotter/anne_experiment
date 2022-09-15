@@ -33,6 +33,11 @@ def run():
     
         
     try:
+
+        # Close Doors to Start 
+        box.doors.door_1.close(wait=True)
+        box.doors.door_2.close(wait=True)
+        box.lasers.laser1.turn_off()
         
         for i in range(box.software_config['values']['rounds']):
             
@@ -42,7 +47,7 @@ def run():
             box.speakers.speaker1.play_tone('round_start') # Round Start Tone 
 
             # # Phase 1: Extending Door Levers # # 
-            lever_phase = box.timing.new_phase(f'door_levers_out', length = box.software_config['values']['lever_out_time'])
+            lever_phase = box.timing.new_phase(f'door_levers_out', length = box.software_config['values']['round_length'])
             
             # door1 and door2 lever out 
             press_latency_1 = box.levers.door_1.extend()
@@ -68,10 +73,10 @@ def run():
                     # Retract All Levers
                     box.levers.door_1.retract()
                     box.levers.door_2.retract()
-                    lever_phase.end_phase()
+                    # lever_phase.end_phase()
 
                     # 
-                    # Tone, Delay, and Reward 
+                    # Tone, Delay, Lasers, 1 Sec Delay, Reward (Door Opens)
                     # 
                     
                     # tone 
@@ -86,32 +91,44 @@ def run():
                         delay = box.software_config['delay_default']
                     time.sleep(delay)
             
-                    # Reward: Open the Opposite Door and monitor for a beam break 
-                    reward_phase = box.timing.new_phase(f'door_open', length = box.software_config['values']['reward_time'])
-                    
+
+                    # Reward: Open the Opposite Door and monitor for a beam break                     
                     if lever_pressed == 1: 
+                        time.sleep(1) # pause another second to reach a 5 second delay until door opens
+
                         # lever 1 press reward: open the OPPOSITE door ( door 2 )
                         door2_lat_obj = box.doors.door_2.open(wait=True)
                         # Monitor door 2 for First Beam Break 
-                        box.beams.door2_ir.monitor_beam_break(latency_to_first_beambreak = door2_lat_obj, end_with_phase=reward_phase)
+                        box.beams.door2_ir.monitor_beam_break(latency_to_first_beambreak = door2_lat_obj, end_with_phase=lever_phase)
                     else: 
+                        # Lasers Come On until Door Closes 
+                        box.lasers.laser1.turn_on()
+
+                        time.sleep(1) # pause another second to reach a 5 second delay until door opens
+
                         # lever 2 press reward: open the OPPOSITE door ( door 1 )
                         door1_lat_obj = box.doors.door_1.open(wait = True)
                         # monitor door 1 for first beam break 
-                        box.beams.door1_ir.monitor_beam_break(latency_to_first_beambreak = door1_lat_obj, end_with_phase=reward_phase)
+                        box.beams.door1_ir.monitor_beam_break(latency_to_first_beambreak = door1_lat_obj, end_with_phase=lever_phase)
 
 
                     # Pause for Reward Time ( time that door is open for )
-                    time.sleep(box.software_config['values']['reward_time'])
+                    box.timing.wait_for_round_finish()
                     
                     # QUESTION: should we end phase ( to stop monitoring for a beam break ) or close door FIRST?? --> move placement of reward_phase.end_phase() to before or after closing the door to decide this
+                    
+                    # Laser Off
+                    box.lasers.laser1.turn_off() 
+                    # tone 
+                    box.speakers.speaker1.play_tone('door_close')
                     # Close the opened door
                     if lever_pressed == 1: 
                         box.doors.door_2.close(wait=True)
                     else: 
                         box.doors.door_1.close(wait=True) 
+                    
 
-                    reward_phase.end_phase() # END OF REWARD PHASE
+                    lever_phase.end_phase() # END OF REWARD PHASE
 
 
             if lever_pressed == 0: 
@@ -125,6 +142,14 @@ def run():
 
                 print('no lever press')
 
+            #
+            # move time 
+            #
+            print('\n time to move the vole over! ')
+            move_phase = box.timing.new_phase(f'Move Vole', length = box.software_config['values']['move_time'])
+            time.sleep(box.software_config['values']['move_time'])
+            move_phase.end_phase()
+            print('\n vole should be moved now.')
 
             #
             # Intertrial Interval --> interval where nothing is happening before we start next round ( time to move voles )

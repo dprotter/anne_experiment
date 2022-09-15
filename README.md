@@ -46,6 +46,12 @@ Github Things
 =====
     this section explains how to get the code that sits in the github repository (https://github.com/sarah-litz/anne_repository.git) onto a Raspberry Pi. It also explains the process of when changes are made to a file in the repository, how to push those changes to github, and then how to pull those changes in order to update the code on every Raspberry Pis that is connected to this repository.
 
+SSH Into Pi
+------
+open VS code
+cmnd-shift-P 
+
+
 Cloning Repository to get repository code onto a new Raspberry Pi
 -----
 Ensure that you are positioned in the directory that you want the repository to appear in, and then run the following command in a terminal.  
