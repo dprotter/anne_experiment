@@ -1,3 +1,10 @@
+'''
+    Experiment (4/4): Door Test
+
+Questions: 
+-> will there be more than one vole in the main chamber? ( i.e. is it possible that both levers will reach there goal number of presses meaning that we should open both doors in a single round? )
+
+'''
 from RPI_Operant.hardware.box import Box
 import time
 import random
@@ -35,7 +42,7 @@ def run():
             box.speakers.speaker1.play_tone('round_start') # Round Start Tone 
 
             # # Phase 1: Extending Door Levers # # 
-            phase = box.timing.new_phase(f'door_levers_out', length = box.software_config['values']['lever_out_time'])
+            lever_phase = box.timing.new_phase(f'door_levers_out', length = box.software_config['values']['lever_out_time'])
             
             # door1 and door2 lever out 
             press_latency_1 = box.levers.door_1.extend()
@@ -43,59 +50,88 @@ def run():
             box.levers.door_1.wait_for_n_presses(n = 1, latency_obj = press_latency_1)
             box.levers.door_2.wait_for_n_presses(n = 1, latency_obj = press_latency_2)
 
-            while phase.active(): 
-                
-                if box.levers.door_1.presses_reached: # door lever was pressed 
+            lever_pressed = 0 # 0 represents no lever press 
+            while lever_phase.active(): 
 
+                if box.levers.door_1.presses_reached or box.levers.door_2.presses_reached: # door lever was pressed 
                     #
-                    # Logic for what should happen if there is a door 1 lever press 
+                    # lever 1 or 2 reached Goal Presses
+                    # Logic for what should happen if there is a lever press 
                     #
 
-                    # retract lever 1 
+                    if box.levers.door_1.presses_reached: 
+                        lever_pressed = 1 
+                    else: 
+                        lever_pressed = 2
+
+
+                    # Retract All Levers
                     box.levers.door_1.retract()
+                    box.levers.door_2.retract()
+                    lever_phase.end_phase()
 
+                    # 
+                    # Tone, Delay, and Reward 
+                    # 
+                    
+                    # tone 
+                    box.speakers.speaker1.play_tone('door_open') 
+                    
 
-                    # Tone, Delay, and Open the OPPOSITE door
-
-                    #
-                    # Delay 
+                    # delay 
                     try: 
-                        box.software_config['values']['delay_by_day'][RUNTIME_DICT['day']-1] # grab delay that corresponds with the day number 
+                        delay = box.software_config['values']['delay_by_day'][RUNTIME_DICT['day']-1] # grab delay that corresponds with the day number 
                     except IndexError: 
                         # if day num goes over the delay_by_day values entered in the software file, use the delay default value instead 
-                        time.sleep(box.software_config['delay_default']) 
+                        delay = box.software_config['delay_default']
+                    time.sleep(delay)
+            
+                    # Reward: Open the Opposite Door and monitor for a beam break 
+                    reward_phase = box.timing.new_phase(f'door_open', length = box.software_config['values']['reward_time'])
                     
-                    #
-                    # Open door 2 
-                    door2_lat_obj = box.doors.door_2.open(wait=True)
-                    # Monitor door 2 for First Beam Break 
-                    box.beams.door2_ir.monitor_beam_break(latency_to_first_beambreak = door2_lat_obj, end_with_phase=phase)
+                    if lever_pressed == 1: 
+                        # lever 1 press reward: open the OPPOSITE door ( door 2 )
+                        door2_lat_obj = box.doors.door_2.open(wait=True)
+                        # Monitor door 2 for First Beam Break 
+                        box.beams.door2_ir.monitor_beam_break(latency_to_first_beambreak = door2_lat_obj, end_with_phase=reward_phase)
+                    else: 
+                        # lever 2 press reward: open the OPPOSITE door ( door 1 )
+                        door1_lat_obj = box.doors.door_1.open(wait = True)
+                        # monitor door 1 for first beam break 
+                        box.beams.door1_ir.monitor_beam_break(latency_to_first_beambreak = door1_lat_obj, end_with_phase=reward_phase)
 
-                    # 
-                    #  Assuming we should pause here to allow a moment for the vole to run thru the newly opened door ?? 
-                    # 
+
+                    # Pause for Reward Time ( time that door is open for )
+                    time.sleep(box.software_config['values']['reward_time'])
                     
-                    # End Phase: we will stop monitoring for a beam break at the point that we choose to end phase. 
-                    phase.end_phase()
+                    # QUESTION: should we end phase ( to stop monitoring for a beam break ) or close door FIRST?? --> move placement of reward_phase.end_phase() to before or after closing the door to decide this
+                    # Close the opened door
+                    if lever_pressed == 1: 
+                        box.doors.door_2.close(wait=True)
+                    else: 
+                        box.doors.door_1.close(wait=True) 
 
-            if not box.levers.food.presses_reached: 
+                    reward_phase.end_phase() # END OF REWARD PHASE
+
+
+            if lever_pressed == 0: 
 
                 #
                 # Logic for what shold happen if there is NO lever press 
                 #
-                box.levers.food.retract() # retract food lever 
+                box.levers.door_1.retract() # retract levers
+                box.levers.door_2.retract()
+                lever_phase.end_phase()
 
                 print('no lever press')
-            
-            phase.end_phase() # Early exit from the Lever Out Phase, doesn't need to complete until 300 seconds finishes
 
 
             #
-            # Intertrial Interval -- > 30 second interval where nothing is happening before we start next round
+            # Intertrial Interval --> interval where nothing is happening before we start next round ( time to move voles )
             #
-            phase = box.timing.new_phase(f'ITI', length = box.software_config['values']['ITI'])
+            iti_phase = box.timing.new_phase(f'ITI', length = box.software_config['values']['ITI'])
             time.sleep(box.software_config['values']['ITI'])
-            phase.end_phase()
+            iti_phase.end_phase()
 
 
         #
@@ -115,56 +151,4 @@ def run():
 
 if __name__ == '__main__':
     run()
-'''
 
-Anne Experiment (4/4)
-Description: 
-- implementing lasers turning on/off 
-
-key_values = {'num_rounds': 20,
-              'round_time':2*60,
-              'reward_time':60,
-              'move_time':20,
-              'ITI':30,
-              'pellet_tone_time':1, 
-              'pellet_tone_hz':2500,
-              'door_close_tone_time':1, 
-              'door_close_tone_hz':7000,
-              'door_open_tone_time':1,
-              'door_open_tone_hz':10000,
-              'round_start_tone_time':1, 
-              'round_start_tone_hz':5000,
-              'delay by day':[5],
-              'delay default':5}
-
-
-key_values_def = {'num_rounds':'number of rounds',
-                  'round_time':'total round length',
-                  'reward_time':'time door is left open',
-                  'move_time':'seconds to move the vole back to the lever room',
-                  'ITI':'time immediately preceeding the start of a new round',
-                  'pellet_tone_time':'in s', 
-                  'pellet_tone_hz':'in hz',
-                  'door_close_tone_time':'in s', 
-                  'door_close_tone_hz':'in hz',
-                  'door_open_tone_time':'in s',
-                  'door_open_tone_hz':'in hz',
-                  'round_start_tone_time':'in s', 
-                  'round_start_tone_hz':'in hz',
-                  'delay by day':'delay between lever press and reward',
-                  'delay default':'delay between lever press and reward if beyond delay by day length'}
-
-
-
-setup --> reverse lever position; causes the lever further from the door to be the lever that opens that door instead of the lever that is closest to the door 
-
-round buzz 
-
-extend and monitor lever 1 & 2 
-if a lever is pressed, open the OPPOSITE door
-    monitor for a beam break to track if vole walks thru door 
-if the lever is not pressed, retract levers
-
-
-
-'''

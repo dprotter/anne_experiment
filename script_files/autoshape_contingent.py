@@ -18,6 +18,7 @@ USER_SOFTWARE_CONFIG_PATH = '/home/pi/anne_experiment/yaml_setup_files/autoshape
 
 
 box = Box()
+
 def run():
     
     #
@@ -64,10 +65,11 @@ def run():
                     # 
                     # Delay 
                     try: 
-                        box.software_config['values']['delay_by_day'][RUNTIME_DICT['day']-1] # grab delay that corresponds with the day number 
+                        delay = box.software_config['values']['delay_by_day'][RUNTIME_DICT['day']-1] # grab delay that corresponds with the day number 
                     except IndexError: 
                         # if day num goes over the delay_by_day values entered in the software file, use the delay default value instead 
-                        time.sleep(box.software_config['delay_default']) 
+                        delay = box.software_config['delay_default']
+                    time.sleep(delay)
                     # Dispense 
                     box.dispensers.continuous_dispenser_1.dispense()
                     phase.end_phase()
@@ -81,7 +83,7 @@ def run():
 
                 print('no lever press')
             
-            phase.end_phase() # Early exit from the Lever Out Phase, doesn't need to complete until 300 seconds finishes
+                phase.end_phase() # Early exit from the Lever Out Phase, doesn't need to complete until 300 seconds finishes
 
 
             #

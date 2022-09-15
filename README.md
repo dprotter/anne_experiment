@@ -15,6 +15,13 @@ python3 -m RPI_Operant.launcher -i '/home/pi/anne_experiment/csv_input_files/exp
 ~~~
 
 
+4 Steps for Adding a New Script
+========
+1. add a python script file in the directory script_files that contains logic for how we want experiment to execute 
+2. add a software configuration yaml file in the directory yaml_setup_files 
+3. add a hardware configuartion yaml file in the directory yaml_setup_files 
+4. make updates to the CSV File that you plan to run so it contains the file paths to the newly created script and configuration files 
+
 CSV File Inputs
 ------
 Fill out the CSV file with values that will direct the launcher to the script you want to run and what hardware/software configurations should be used when running that script.
