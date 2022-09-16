@@ -82,20 +82,14 @@ def run():
                     if box.levers.door_1.presses_reached: 
                         lever_pressed = 1 
                         # Monitor, Retract 
-
-                        # 
-                        # (TODO)
-                        ## Come Back To This: how do we get latency object if we are opening the door afterwards? 
-                        # Measure Latency from when the Door Opens to the First Beam Break! 
-                        # 
-                        box.beams.door2_ir.monitor_beam_break(end_with_phase=lever_phase)
+                        # box.beams.door2_ir.monitor_beam_break(end_with_phase=lever_phase) --> monitoring moved below before we open door 
                         box.levers.door_1.retract()
 
 
                     else: 
                         lever_pressed = 2
                         # Monitor, Retract
-                        box.beams.door1_ir.monitor_beam_break(end_with_phase=lever_phase)
+                        # box.beams.door1_ir.monitor_beam_break(end_with_phase=lever_phase) --> monitoring moved below before we open door 
                         box.levers.door_2.retract()
 
 
@@ -117,10 +111,12 @@ def run():
                     
                     if lever_pressed == 1: 
                         # lever 1 press reward: open the OPPOSITE door ( door 2 )
-                        door2_lat_obj = box.doors.door_2.open(wait=True)
+                        door2_lat_obj = box.doors.door_2.open()
+                        box.beams.door2_ir.monitor_beam_break(latency_to_first_beambreak = door2_lat_obj, end_with_phase=lever_phase)
                     else: 
                         # lever 2 press reward: open the OPPOSITE door ( door 1 )
-                        door1_lat_obj = box.doors.door_1.open(wait = True)
+                        door1_lat_obj = box.doors.door_1.open()
+                        box.beams.door1_ir.monitor_beam_break(latency_to_first_beambreak = door1_lat_obj, end_with_phase=lever_phase)
 
                     # Pause for Reward Time ( time that door is open for ) --> Whatever the remaining round time is is the reward time 
                     box.timing.wait_for_round_finish() # sleeps until the round time is over 
