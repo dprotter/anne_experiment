@@ -19,6 +19,11 @@ def run():
               user_software_config_file_path=USER_SOFTWARE_CONFIG_PATH,
               start_now=True, simulated = False)
     
+    # Ensure doors are closed at start 
+    setup_phase = box.timing.new_phase('setup')
+    box.doors.door_1.close(wait=True)
+    box.doors.door_2.close(wait=True)
+    setup_phase.end_phase()
 
     #simplifying hardware calls
     lever = box.levers.food

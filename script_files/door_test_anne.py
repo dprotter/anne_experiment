@@ -35,9 +35,12 @@ def run():
     try:
 
         # Close Doors to Start 
+        # Ensure doors are closed at start 
+        setup_phase = box.timing.new_phase('setup')
         box.doors.door_1.close(wait=True)
         box.doors.door_2.close(wait=True)
         box.lasers.laser1.turn_off()
+        setup_phase.end_phase()
         
         for i in range(box.software_config['values']['rounds']):
             
