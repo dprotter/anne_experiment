@@ -50,7 +50,7 @@ def run():
             box.speakers.speaker1.play_tone('round_start') # Round Start Tone 
 
             # # Phase 1: Extending Door Levers # # 
-            lever_phase = box.timing.new_phase(f'door_levers_out', length = box.software_config['values']['round_length'])
+            lever_phase = box.timing.new_phase(f'lever_out', length = box.software_config['values']['round_length'])
             
             # door1 and door2 lever out 
             press_latency_1 = box.levers.door_1.extend()
