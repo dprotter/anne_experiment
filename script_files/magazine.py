@@ -6,7 +6,7 @@ from pathlib import Path
 experiment_name = Path(__file__).stem
 RUNTIME_DICT = {'vole':000, 'day':1, 'experiment':experiment_name}
 # # For Running on the Raspberry Pi: 
-USER_HARDWARE_CONFIG_PATH = '/home/pi/anne_experiment/yaml_setup_files/magazine_hardware.yaml'
+USER_HARDWARE_CONFIG_PATH = '/home/pi/RPI_Operant2/RPI_Operant/default_setup_files/local_hardware.yaml'
 USER_SOFTWARE_CONFIG_PATH = '/home/pi/anne_experiment/yaml_setup_files/magazine_software.yaml'
 
 
