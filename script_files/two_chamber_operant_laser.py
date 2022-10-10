@@ -33,7 +33,8 @@ def run():
     
     #simplifying hardware calls
     lever2 = box.levers.door_2
-    door = box.doors.door_2 # (TODO) This should get changed to whatever the new Door object that is getting added is called!! 
+    door = box.doors.door_1 # (TODO) This should get changed to whatever the new Door object that is getting added is called!! 
+    beam = box.beams.door1_ir
     speaker = box.speakers.speaker1
     laser = box.lasers.laser1
 
@@ -67,6 +68,9 @@ def run():
 
 
         if lever2.presses_reached: 
+            
+            beam.start_getting_beam_broken_durations()
+
 
             # Delay 
             try: 
@@ -93,6 +97,9 @@ def run():
             laser.turn_off()
             speaker.play_tone(tone_name='door_close')
             door.close()
+
+            # Stop tracking beam breaks (interaction zone) until next round
+            beam.stop_getting_beam_broken_durations()
             
         else:
 

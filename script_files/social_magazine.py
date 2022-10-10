@@ -26,6 +26,7 @@ def run():
     beam = box.beams.door1_ir
     speaker = box.speakers.speaker1
 
+    print('Note: Vole should NOT be in the interaction zone at the start of each experiment round.')
 
     # Ensure doors are closed at start 
     setup_phase = box.timing.new_phase('setup')
@@ -35,6 +36,8 @@ def run():
     
     for i in range(1,box.software_config['values']['rounds']+1, 1):
         box.timing.new_round(length = box.software_config['values']['round_length'])
+
+        # beam.count_beam_breaks(reset_on_call = True) # this will tally up all beam breaks in the background so we can have a running total 
         
         phase = box.timing.new_phase('lever_out', box.software_config['values']['lever_out_time'])
         speaker.play_tone(tone_name = 'round_start')
@@ -51,8 +54,9 @@ def run():
 
         if lever2.presses_reached:
 
-            # Start Monitoring Beam to get Durations when vole is in Interaction Zone 
-            beam.count_beam_breaks(get_duration = True)
+            # Start Getting Duration objects for when vole is in Interaction Zone 
+            # beam.get_interaction_zone_durations()
+            beam.start_getting_beam_broken_durations()
 
             # if pressed w/in the 5 seconds: Tone/Open Door, Wait for Reward Time, Tone/Close Door 
 
@@ -62,15 +66,22 @@ def run():
 
             # Reward Time 
             phase = box.timing.new_phase(name = 'reward time', length = box.software_config['values']['reward_time'])
+
+            beam.monitor_beam_break(end_with_phase = phase)
+            
             phase.wait() # doors will remain open for 30 seconds 
             phase.end_phase()
 
             # Tone and Close Door 
             speaker.play_tone(tone_name = 'door_close')
             door.close()
+
+            # Stop tracking beam breaks (interaction zone) until next round
+            beam.stop_getting_beam_broken_durations()
         
         else: # No Press w/in 2 seconds. Go straight to ITI
             print('no lever press')
+        
         
 
         # ITI Time

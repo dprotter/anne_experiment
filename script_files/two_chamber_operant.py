@@ -29,7 +29,8 @@ def run():
          
     #simplifying hardware calls
     lever2 = box.levers.door_2
-    door = box.doors.door_2 # (TODO) This should get changed to whatever the new Door object that is getting added is called!! 
+    door = box.doors.door_1 # (TODO) This should get changed to whatever the new Door object that is getting added is called!! 
+    beam = box.beams.door1_ir
     speaker = box.speakers.speaker1
 
 
@@ -63,7 +64,9 @@ def run():
         lever_phase.end_phase()
 
         if lever2.presses_reached: 
-            
+
+            beam.start_getting_beam_broken_durations()
+
             # Delay 
             try: 
                 delay = box.software_config['values']['delay_by_day'][RUNTIME_DICT['day']-1] # grab delay that corresponds with the day number 
@@ -84,6 +87,8 @@ def run():
             speaker.play_tone(tone_name='door_close')
             door.close()
         
+            # Stop tracking beam breaks (interaction zone) until next round
+            beam.stop_getting_beam_broken_durations()
 
         else: # No Lever Press -> Go Straight to ITI 
             print('no lever press')
