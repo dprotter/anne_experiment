@@ -59,7 +59,7 @@ def run():
         
         # door1 and door2 lever out 
         press_latency = lever2.extend()
-        lever2.wait_for_n_presses(n=1, latency_obj = press_latency)
+        lever2.wait_for_n_presses(n=1, latency_obj = press_latency, play_lever_tones = True)
         while phase.active() and not lever2.presses_reached: 
             '''waiting here for something to happen'''
         
