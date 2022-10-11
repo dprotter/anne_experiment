@@ -13,8 +13,8 @@ experiment_name = Path(__file__).stem
 RUNTIME_DICT = {'vole':000, 'day':1, 'experiment':experiment_name}
 
 # # For Running on the Raspberry Pi: 
-USER_HARDWARE_CONFIG_PATH = '/home/pi/anne_experiment/yaml_setup_files/door_test_hardware.yaml'
-USER_SOFTWARE_CONFIG_PATH = '/home/pi/anne_experiment/yaml_setup_files/door_test_software.yaml'
+USER_HARDWARE_CONFIG_PATH = '/home/pi/RPI_Operant2/RPI_Operant/default_setup_files/local_hardware.yaml'
+USER_SOFTWARE_CONFIG_PATH = '/home/pi/anne_experiment/yaml_setup_files/two_chamber_operant_laser_software.yaml'
 
 
 box = Box()
@@ -33,7 +33,7 @@ def run():
     
     #simplifying hardware calls
     lever2 = box.levers.door_2
-    door = box.doors.door_1 # (TODO) This should get changed to whatever the new Door object that is getting added is called!! 
+    door = box.doors.door_1 
     beam = box.beams.door1_ir
     speaker = box.speakers.speaker1
     laser = box.lasers.laser1
@@ -69,7 +69,9 @@ def run():
 
         if lever2.presses_reached: 
             
-            beam.start_getting_beam_broken_durations()
+            # Interaction Zone Durations & Beam Break Timestamps 
+            beam.start_getting_beam_broken_durations() 
+            beam.monitor_beam_break() # ( TODO ) -- keep only if timestamps for every beam break are wanted. 
 
 
             # Delay 
@@ -99,11 +101,13 @@ def run():
             door.close()
 
             # Stop tracking beam breaks (interaction zone) until next round
-            beam.stop_getting_beam_broken_durations()
+            beam.stop_getting_beam_broken_durations() # quits thread that gets durations
+            beam.end_monitoring() # quits thread that timestamps every beam break
             
         else:
 
             print('no lever press')
+
 
         # move time (TODO) ask if i need move Time!
 

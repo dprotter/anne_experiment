@@ -37,8 +37,10 @@ def run():
     for i in range(1,box.software_config['values']['rounds']+1, 1):
         box.timing.new_round(length = box.software_config['values']['round_length'])
 
-        # beam.count_beam_breaks(reset_on_call = True) # this will tally up all beam breaks in the background so we can have a running total 
-        
+
+        # ( TODO -- option 2 for interaction zone monitoring. Leave this commented out. ) beam.count_beam_breaks(reset_on_call = True) # this will tally up all beam breaks in the background so we can have a running total 
+
+
         phase = box.timing.new_phase('lever_out', box.software_config['values']['lever_out_time'])
         speaker.play_tone(tone_name = 'round_start')
         press_latency = lever2.extend()
@@ -54,9 +56,11 @@ def run():
 
         if lever2.presses_reached:
 
-            # Start Getting Duration objects for when vole is in Interaction Zone 
-            # beam.get_interaction_zone_durations()
+            # ( TODO -- option 2 for interaction zone monitoring. Leave this commented out. ) beam.get_interaction_zone_durations()
+
+            # Interaction Zone Durations & Beam Break Timestamps 
             beam.start_getting_beam_broken_durations()
+            beam.monitor_beam_break()
 
             # if pressed w/in the 5 seconds: Tone/Open Door, Wait for Reward Time, Tone/Close Door 
 
@@ -67,8 +71,6 @@ def run():
             # Reward Time 
             phase = box.timing.new_phase(name = 'reward time', length = box.software_config['values']['reward_time'])
 
-            beam.monitor_beam_break(end_with_phase = phase)
-            
             phase.wait() # doors will remain open for 30 seconds 
             phase.end_phase()
 
@@ -77,7 +79,8 @@ def run():
             door.close()
 
             # Stop tracking beam breaks (interaction zone) until next round
-            beam.stop_getting_beam_broken_durations()
+            beam.stop_getting_beam_broken_durations() # quits thread that gets durations
+            beam.end_monitoring() # quits thread that timestamps every beam break
         
         else: # No Press w/in 2 seconds. Go straight to ITI
             print('no lever press')
