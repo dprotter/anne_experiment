@@ -42,6 +42,7 @@ def run():
     # Ensure doors are closed and laser is off at start 
     setup_phase = box.timing.new_phase('setup')
     door.close()
+    box.doors.door_2.close()
     laser.turn_off()
     setup_phase.end_phase()
         

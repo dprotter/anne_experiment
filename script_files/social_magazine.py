@@ -31,6 +31,7 @@ def run():
     # Ensure doors are closed at start 
     setup_phase = box.timing.new_phase('setup')
     door.close()
+    box.doors.door_2.close()
     setup_phase.end_phase()
 
     
