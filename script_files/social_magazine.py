@@ -55,15 +55,13 @@ def run():
         lever2.retract()   
         phase.end_phase()
 
-        if lever2.presses_reached:
+        if lever2.presses_reached:  # if pressed w/in the 5 seconds: Tone/Open Door, Wait for Reward Time, Tone/Close Door 
 
             # ( TODO -- option 2 for interaction zone monitoring. Leave this commented out. ) beam.get_interaction_zone_durations()
 
             # Interaction Zone Durations & Beam Break Timestamps 
             beam.start_getting_beam_broken_durations()
             beam.monitor_beam_break()
-
-            # if pressed w/in the 5 seconds: Tone/Open Door, Wait for Reward Time, Tone/Close Door 
 
             # Open Door 
             speaker.play_tone(tone_name = 'door_open')
@@ -83,9 +81,32 @@ def run():
             beam.stop_getting_beam_broken_durations() # quits thread that gets durations
             beam.end_monitoring() # quits thread that timestamps every beam break
         
-        else: # No Press w/in 2 seconds. Go straight to ITI
+        else: # No Press w/in 5 seconds. Go straight to ITI
             print('no lever press')
         
+            # No Lever Press; Open the door anyways and allow for reward time!
+
+            # Interaction Zone Durations & Beam Break Timestamps 
+            beam.start_getting_beam_broken_durations()
+            beam.monitor_beam_break()
+
+            # Open Door 
+            speaker.play_tone(tone_name = 'door_open')
+            door.open()
+
+            # Reward Time 
+            phase = box.timing.new_phase(name = 'reward time', length = box.software_config['values']['reward_time'])
+
+            phase.wait() # doors will remain open for 30 seconds 
+            phase.end_phase()
+
+            # Tone and Close Door 
+            speaker.play_tone(tone_name = 'door_close')
+            door.close()
+
+            # Stop tracking beam breaks (interaction zone) until next round
+            beam.stop_getting_beam_broken_durations() # quits thread that gets durations
+            beam.end_monitoring() # quits thread that timestamps every beam break
         
 
         # ITI Time
