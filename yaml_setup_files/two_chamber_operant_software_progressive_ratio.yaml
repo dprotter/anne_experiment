@@ -6,7 +6,7 @@ checks:
 
 values:
   maximum_experiment_length: 2700 #45 min
-
+  progressive_ratio: 2
   reward_time: 30
   ITI: 30
   delay_by_day: [0]

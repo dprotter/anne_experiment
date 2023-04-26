@@ -26,26 +26,20 @@ def run():
               start_now=True, 
               simulated=False)
 
-         
+    box.reset()
+    time.sleep(1)       
     #simplifying hardware calls
-    lever2 = box.levers.door_2
+    lever2 = box.levers.door_1
     door = box.doors.door_1 
     beam = box.beams.door1_ir
     speaker = box.speakers.speaker1
-
-
-    # Ensure doors are closed at start 
-    setup_phase = box.timing.new_phase('setup')
-    door.close()
-    box.doors.door_2.close()
-    setup_phase.end_phase()
 
 
     for i in range(box.software_config['values']['rounds']):
         
         print(f'ROUND {i+1}')
         box.timing.new_round(length = box.software_config['values']['round_length'])
-        box.speakers.speaker1.play_tone('round_start') # Round Start Tone 
+        box.speakers.speaker1.play_tone('round_start', wait = True) # Round Start Tone 
 
 
         lever_phase = box.timing.new_phase(f'lever_out', length = box.software_config['values']['round_length'])
