@@ -49,8 +49,9 @@ levers:
     
   door_1:
     servo: 2
-    extended: 65
-    retracted: 160
+    extended: 20
+    retracted: 110
+    
     pin: 18
     pullup_pulldown: pullup
     target_name: door_1
@@ -60,8 +61,8 @@ levers:
   
   door_2:
     servo: 12
-    extended: 20
-    retracted: 110
+    extended: 70
+    retracted: 165
     pin: 22
     pullup_pulldown: pullup
     target_name: door_2
