@@ -34,7 +34,7 @@ def run():
     speaker = box.speakers.speaker1
 
     progressive_ratio = box.software_config['values']['progressive_ratio']
-    presses_required = 2
+    presses_required = 0 if not 'start_at_press' in box.run_dict else box.run_dict['start_at_press']
 
     experiment_length_phase = box.timing.new_phase(f'maximum_experiment_length', length = box.software_config['values']['maximum_experiment_length'])
     
