@@ -16,6 +16,7 @@ USER_SOFTWARE_CONFIG_PATH = '/home/pi/anne_experiment/yaml_setup_files/two_chamb
 
 box = Box()
 def run():
+
     
     #
     # Call to Setup Box with Hardware/Software yaml files specified! 
@@ -34,7 +35,7 @@ def run():
     speaker = box.speakers.speaker1
 
     progressive_ratio = box.software_config['values']['progressive_ratio']
-    presses_required = 0 if not 'start_at_press' in box.run_dict else box.run_dict['start_at_press']
+    presses_required = 1 if not 'start_at_press' in box.run_dict else box.run_dict['start_at_press']
 
     experiment_length_phase = box.timing.new_phase(f'maximum_experiment_length', length = box.software_config['values']['maximum_experiment_length'])
     
@@ -90,7 +91,7 @@ def run():
 
             # Tone & Close Door
             speaker.play_tone(tone_name='door_close')
-            door.close()
+            door.close(wait = True)
         
             # Stop tracking beam breaks (interaction zone) until next round
             beam.stop_getting_beam_broken_durations() # quits thread that gets durations

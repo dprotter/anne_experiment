@@ -22,7 +22,7 @@ doors:
     override_close_pin: 25
     state_switch: 4
     servo_type: continuous
-    close_timeout: 20
+    close_timeout: 30
  
   door_2:
     servo: 14
@@ -34,7 +34,7 @@ doors:
     override_close_pin: 5
     state_switch: 17
     servo_type: continuous
-    close_timeout: 20
+    close_timeout: 30
 
 levers:
   food:
@@ -61,8 +61,8 @@ levers:
   
   door_2:
     servo: 12
-    extended: 70
-    retracted: 165
+    extended: 30
+    retracted: 120
     pin: 22
     pullup_pulldown: pullup
     target_name: door_2
