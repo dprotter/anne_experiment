@@ -5,7 +5,7 @@ checks:
   save_timestamps: True
 
 values:
-  maximum_experiment_length: 300 #45 min
+  maximum_experiment_length: 2700 #45 min
   progressive_ratio: 2
   reward_time: 30
   ITI: 30
