@@ -16,6 +16,7 @@ USER_SOFTWARE_CONFIG_PATH = '/home/pi/anne_experiment/yaml_setup_files/two_chamb
 
 box = Box()
 def run():
+
     
     #
     # Call to Setup Box with Hardware/Software yaml files specified! 
@@ -84,13 +85,13 @@ def run():
             # Reward Time 
             phase = box.timing.new_phase(name = 'reward time', length = box.software_config['values']['reward_time'])
             max_presses_reached = lever2.lever_presses
-            total_presses +=1
+            
             phase.wait() # door will be open for 30 seconds
             phase.end_phase()
 
             # Tone & Close Door
             speaker.play_tone(tone_name='door_close')
-            door.close()
+            door.close(wait = True)
         
             # Stop tracking beam breaks (interaction zone) until next round
             beam.stop_getting_beam_broken_durations() # quits thread that gets durations
@@ -103,7 +104,7 @@ def run():
             time.sleep(box.software_config['values']['ITI'])
             iti_phase.end_phase()
         
-    print(f'end of experiment, max presses: {max_presses_reached}\n{total_presses}')
+    print(f'####\nend of experiment, max presses: {max_presses_reached}\ntotal presses: {lever2.total_presses}\nlast_round_presses: {lever2.lever_presses}')
 
         
         # move time  ?? (TODO: ask if this script should have a move time like in door shape)
