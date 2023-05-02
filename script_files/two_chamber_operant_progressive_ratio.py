@@ -103,9 +103,10 @@ def run():
             iti_phase = box.timing.new_phase(f'ITI', length = box.software_config['values']['ITI'])
             time.sleep(box.software_config['values']['ITI'])
             iti_phase.end_phase()
-        
-    print(f'####\nend of experiment, max presses: {max_presses_reached}\ntotal presses: {lever2.total_presses}\nlast_round_presses: {lever2.lever_presses}')
-
+    try:
+        print(f'####\nend of experiment, max presses: {max_presses_reached}\ntotal presses: {lever2.total_presses}\nlast_round_presses: {lever2.lever_presses}')
+    except:
+        print('whoops, dave tried to make a change that didnt work. maybe call him down.')
         
         # move time  ?? (TODO: ask if this script should have a move time like in door shape)
 
