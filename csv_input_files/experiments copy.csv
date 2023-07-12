@@ -1,2 +1,2 @@
 vole,day,title,runtime,finished,rounds_completed,script_path,script_setup,hardware_setup,output_path,args,Unnamed: 11
-1,1,PR_test,4_26_2023__10_11,False,,/home/pi/test_PR/anne_experiment/script_files/two_chamber_operant_progressive_ratio.py,/home/pi/test_PR/anne_experiment/yaml_setup_files/two_chamber_operant_software_progressive_ratio.yaml,/home/pi/test_PR/anne_experiment/yaml_setup_files/local_hardware.yaml,/home/pi/test_outputs,start_at_press:4,
+1,1,PR_test,7_10_2023__15_59,False,,/home/pi/anne_experiment/script_files/two_chamber_operant_progressive_ratio.py,/home/pi/anne_experiment/yaml_setup_files/two_chamber_operant_software_progressive_ratio.yaml,/home/pi/local_rpi_files/local_hardware.yaml,/home/pi/test_outputs,start_at_press:3,

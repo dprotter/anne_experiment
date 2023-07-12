@@ -32,7 +32,7 @@ def run():
     lever2 = box.levers.door_2
     door = box.doors.door_1 
     beam = box.beams.door1_ir
-    speaker = box.speakers.speaker1
+    speaker = box.speakers.speaker
 
     progressive_ratio = box.software_config['values']['progressive_ratio']
     presses_required = 1 if not 'start_at_press' in box.run_dict else box.run_dict['start_at_press']
@@ -48,7 +48,7 @@ def run():
         round_number+=1
         print(f'ROUND {round_number}')
         box.timing.new_round()
-        box.speakers.speaker1.play_tone('round_start', wait = True) # Round Start Tone 
+        box.speakers.speaker.play_tone('round_start', wait = True) # Round Start Tone 
 
         press_latency_2 = lever2.extend()
         lever2.wait_for_n_presses(n = presses_required, latency_obj = press_latency_2, inter_press_retraction = True)

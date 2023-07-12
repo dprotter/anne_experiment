@@ -14,7 +14,7 @@ values:
 
   
 speaker_tones:
-  speaker1:
+  speaker:
     round_start:
       hz: 5000
       length: 1
